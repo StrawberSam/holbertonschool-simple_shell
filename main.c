@@ -24,7 +24,8 @@ int main(void)
 		/*si il y a un argument et on compare args[0] avec "exit" pour exit*/
 		if (args[0] != NULL && strcmp(args[0], "exit") == 0)
 		{
-			cleanup(line, args); /*on libère tout (mémoire)*/
+			free(line);
+			free(args);
 			exit(0); /*on ferme le programme*/
 		}
 		/*Nettoyage mémoire*/
