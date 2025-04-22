@@ -43,7 +43,10 @@ char *get_line(void)
 	errno = 0;/*initialise errno à zéro pour éviter d'anciennes valeurs*/
 
 	/*permet une boucle infinie tant que l'utilisateur ne tape pas EOF*/
-	printf("$ ");/*affiche prompt et attend la ligne de l'utilisateur*/
+	if (isatty(STDIN_FILENO))/*interactive mode*/
+	{
+		printf("$ ");/*affiche prompt et attend la ligne de l'utilisateur*/
+	}
 	read = getline(&line, &len, stdin);
 
 	if (read == -1)
