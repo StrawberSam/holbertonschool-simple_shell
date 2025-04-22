@@ -9,6 +9,6 @@
 #include <sys/wait.h>
 
 int get_line(void);
-
+int main(void);
 
 #endif /* MAIN_H */
