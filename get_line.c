@@ -20,7 +20,7 @@ void cleaner(char *line)
 		if (line[i] == '\n')
 		{
 			line[i] = '\0';
-			break;
+			return;
 		}
 	}
 }
@@ -50,7 +50,7 @@ int get_line(void)
 /*L'utilisateur tape EOF. Fin de fichier détectée. Le programme se termine*/
 		if (feof(stdin))
 		{
-			break;
+			exit (0);
 		}
 		else/*Erreur de lecture*/
 		{
@@ -59,7 +59,6 @@ int get_line(void)
 		}
 	}
 	cleaner(line);/*appel fonction: nettoyage du \n et si line non valide*/
-	exec_cmd(line);/*appel fonction: fork+wait+execve*/
 
 	free(line);/*free car getline*/
 	return (0);
