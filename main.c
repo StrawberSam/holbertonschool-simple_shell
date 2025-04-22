@@ -2,7 +2,7 @@
 
 /**
  * main - Fonction principale pour utiliser get_line()
- * 
+ *
  * Return: 0 la fonction c'est bien passée
  */
 
