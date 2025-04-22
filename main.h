@@ -10,5 +10,6 @@
 
 int get_line(void);
 int main(void);
+char **split_line(char *line);
 
 #endif /* MAIN_H */
