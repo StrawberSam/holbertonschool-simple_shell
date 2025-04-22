@@ -21,6 +21,12 @@ int main(void)
 
 		args = split_line(line); /*on coupe line en mot*/
 
+		/*si il y a un argument et on compare args[0] avec "exit" pour exit*/
+		if (args[0] != NULL && strcmp(args[0], "exit") == 0)
+		{
+			cleanup(line, args); /*on libère tout (mémoire)*/
+			exit(0); /*on ferme le programme*/
+		}
 		/*Nettoyage mémoire*/
 		free(line);
 		free(args);
