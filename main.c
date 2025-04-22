@@ -10,9 +10,20 @@ extern char **environ;
 
 int main(void)
 {
-    while(1) /*boucle infinie*/
-    {
-      get_line(); /*appel de la fonction get_line*/
-    }
-    return (0); /*la fonction c'est bien passée on return 0*/
+	char *line = NULL; /*stock la string récuprée par getline()*/
+	char **args; /*stock les tokens*/
+
+	while (1)
+	{
+		line = get_line(); /*on récupère la string*/
+		if (line == NULL) /*si la commande est vide*/
+			continue; /*on attend une nouvelle commande*/
+
+		args = split_line(line); /*on coupe line en mot*/
+
+		/*Nettoyage mémoire*/
+		free(line);
+		free(args);
+	}
+	return (0);
 }
