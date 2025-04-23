@@ -24,9 +24,38 @@ int main(int ac, char **av)
 			fflush(stdout);
 		}
 
-		line = get_line(); /*on récupère la string*/
-		if (line == NULL) /*si la commande est vide*/
-			continue; /*on attend une nouvelle commande*/
+		line = get_line(); /* on récupère la ligne */
+		if (line == NULL)
+			continue;
+
+		/* Si la ligne ne contient pas d'espace = une seule commande */
+		if (strchr(line, ' ') == NULL)
+		{
+			char *args[] = {line, NULL}; /* ligne simple sans argument */
+			pid = fork();
+
+			if (pid == -1)
+			{
+				perror("fork");
+				free(line);
+				continue;
+			}
+			if (pid == 0)
+			{
+				if (access(line, X_OK) == 0)
+					execve(line, args, environ);
+				else
+				{
+					fprintf(stderr, "%s: No such file or directory\n", line);
+					exit(127);
+				}
+			}
+			else
+				wait(NULL);
+
+			free(line);
+			continue;
+		}
 
 		args = split_line(line); /*on coupe line en mot*/
 
@@ -54,13 +83,6 @@ int main(int ac, char **av)
 			free(line);
 			free(args);
 			continue; /* on passe au prompt suivant sans fork */
-		}
-
-		if (strchr(line, ' ') == NULL)
-		{
-			handle_no_args_command(line);
-			free(line);
-			continue;
 		}
 
 		pid = fork(); /*on crée un nouvel enfant et on récupère son ID*/
