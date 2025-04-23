@@ -8,7 +8,7 @@
 
 
 
-int main(void)
+int simple_shell(void)
 {
 	char *line = NULL; /*stock la string récuprée par getline()*/
 	char **args; /*stock les tokens*/
@@ -51,6 +51,7 @@ int main(void)
 				else
 				{
 					perror("./shell");
+					free(args);
 					exit(EXIT_FAILURE);
 				}
 			}
@@ -58,6 +59,7 @@ int main(void)
 			{
 				execve(args[0], args, environ);
 				perror("./shell");
+				free(args);
 				exit(EXIT_FAILURE);
 			}
 			else if (full_path != NULL)
@@ -72,6 +74,8 @@ int main(void)
 			else
 			{
 				fprintf(stderr, "%s: command not found\n", args[0]);
+				free(line);
+				free(args);
 			}
 
 
