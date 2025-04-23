@@ -51,6 +51,7 @@ char *get_line(void)
 
 	if (read == -1)
 	{
+		free(line);
 /*L'utilisateur tape EOF. Fin de fichier détectée. Le programme se termine*/
 		if (errno == 0)/*variable globale qui contient code erreur d'une fonc*/
 		{/*0 = pas d'erreur*/
