@@ -8,7 +8,7 @@
 
 
 
-int simple_shell(void)
+int main(void)
 {
 	char *line = NULL; /*stock la string récuprée par getline()*/
 	char **args; /*stock les tokens*/
