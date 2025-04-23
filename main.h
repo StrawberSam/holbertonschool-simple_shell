@@ -10,10 +10,10 @@
 #include <sys/wait.h>
 #include <errno.h>
 
+void cleaner(char *line);
 char *get_line(void);
-int main(void);
 char **split_line(char *line);
 char *find_command_in_path(const char *cmd);
-
+int main(void);
 
 #endif /* MAIN_H */
