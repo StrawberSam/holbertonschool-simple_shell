@@ -33,5 +33,4 @@ char **split_line(char *line)
 
 	array_of_tokens[i] = NULL; /*on add un caractère null a la fin du array*/
 	return (array_of_tokens); /*on renvoie le tableau de token*/
-	free(array_of_tokens); /*après renvoie on libère la mémoire*/
 }
