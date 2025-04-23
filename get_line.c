@@ -48,9 +48,6 @@ char *get_line(void)
 	{
 		free(line);
 
-		if (isatty(STDIN_FILENO))
-			printf("\n");
-
 		/*L'utilisateur tape EOF. Fin de fichier détectée. Le programme se termine*/
 		if (errno == 0)/*variable globale qui contient code erreur d'une fonc*/
 		{/*0 = pas d'erreur*/
@@ -63,6 +60,6 @@ char *get_line(void)
 		}
 	}
 	cleaner(line);/*appel fonction: nettoyage du \n et si line non valide*/
-	
+
 	return (line);
 }
