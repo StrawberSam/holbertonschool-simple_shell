@@ -42,17 +42,12 @@ char *get_line(void)
 	ssize_t read;
 	errno = 0;/*initialise errno à zéro pour éviter d'anciennes valeurs*/
 
-	/*permet une boucle infinie tant que l'utilisateur ne tape pas EOF*/
-	if (isatty(STDIN_FILENO))/*interactive mode*/
-	{
-		printf("$ ");/*affiche prompt et attend la ligne de l'utilisateur*/
-	}
 	read = getline(&line, &len, stdin);
 
 	if (read == -1)
 	{
 		free(line);
-/*L'utilisateur tape EOF. Fin de fichier détectée. Le programme se termine*/
+		/*L'utilisateur tape EOF. Fin de fichier détectée. Le programme se termine*/
 		if (errno == 0)/*variable globale qui contient code erreur d'une fonc*/
 		{/*0 = pas d'erreur*/
 			exit (0);
