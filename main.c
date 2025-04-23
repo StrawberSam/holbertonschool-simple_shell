@@ -1,153 +1,177 @@
 #include "main.h"
 
 /**
- * main - Fonction principale pour utiliser get_line()
+ * handle_exit - Vérifie si la commande est "exit"
+ * @args: Tableau d'arguments
  *
- * Return: 0 la fonction c'est bien passée
+ * Return: 1 si c'est "exit", 0 sinon
  */
-
-int main(int ac, char **av)
+int handle_exit(char **args)
 {
-	char *line = NULL; /*stock la string récuprée par getline()*/
-	char **args; /*stock les tokens*/
-	pid_t pid; /*stock l'id du process enfant*/
-	char *full_path = NULL;
-	char *simple_args[2];
-	extern char **environ;
-	(void)ac;
+	if (args[0] != NULL && strcmp(args[0], "exit") == 0)
+		return (1);
+	return (0);
+}
 
-	while (1)
+/**
+ * handle_env - Affiche les variables d'environnement
+ *
+ * @args: Un tableau d'arguments passés à la commande
+ * @line: La ligne d'entrée à libérer
+ *
+ * Return: Aucun, car la fonction retourne void.
+ */
+void handle_env()
+{
+	int i = 0;
+
+	while (environ[i])
 	{
-		/*permet une boucle infinie tant que l'utilisateur ne tape pas EOF*/
-		if (isatty(STDIN_FILENO))/*interactive mode*/
+		printf("%s\n", environ[i]);
+		i++;
+	}
+}
+
+void execute_command(char **args, pid_t pid, char **environ, char *line)
+{
+	pid = fork();
+	if (pid == -1)  /* Si le fork échoue */
+	{
+		perror("fork");
+		free(line);
+		free(args);
+		exit(1);
+	}
+
+	if (pid == 0)  /* Dans le processus enfant */
+	{
+		char *full_path = NULL;
+
+		if (args[0] != NULL && (args[0][0] == '.' || args[0][0] == '/'))
 		{
-			printf("$ ");/*affiche prompt et attend la ligne de l'utilisateur*/
-			fflush(stdout);
-		}
-
-		line = get_line(); /* on récupère la ligne */
-		if (line == NULL)
-			continue;
-
-		/* Si la ligne ne contient pas d'espace = une seule commande */
-		if (strchr(line, ' ') == NULL)
-		{
-			simple_args[0] = line;
-			simple_args[1] = NULL;
-
-			pid = fork();
-
-			if (pid == -1)
-			{
-				perror("fork");
-				free(line);
-				continue;
-			}
-			if (pid == 0)
-			{
-				if (access(line, X_OK) == 0)
-					execve(line, simple_args, environ);
-				else
-					fprintf(stderr, "%s: No such file or directory\n", line);
-				exit(127);
-			}
-			else
-				wait(NULL);
-
-			free(line);
-			continue;
-		}
-
-		args = split_line(line); /*on coupe line en mot*/
-
-		if (!args)
-		{
-			free(line);
-			continue;
-		}
-		/*si il y a un argument et on compare args[0] avec "exit" pour exit*/
-		if (args[0] != NULL && strcmp(args[0], "exit") == 0)
-		{
-			free(line);
-			free(args);
-			exit(0); /*on ferme le programme*/
-		}
-		if (args[0] != NULL && strcmp(args[0], "env") == 0)
-		{
-			int i = 0;
-
-			while (environ[i])
-			{
-				printf("%s\n", environ[i]);
-				i++;
-			}
-			free(line);
-			free(args);
-			continue; /* on passe au prompt suivant sans fork */
-		}
-
-		pid = fork(); /*on crée un nouvel enfant et on récupère son ID*/
-
-		if (pid == -1) /*si le fork de l'enfant échoue*/
-		{
-			perror("fork"); /*message d'erreur dans le terminal*/
-			free(line); /*on libère la mémoire*/
-			free(args);
-			continue; /*on renvoie 1*/
-		}
-		if (pid == 0) /* si le fork réussit */
-		{
-			if (execve(args[0], args, environ) == -1)
-			{
-				perror("execve");
-				exit(EXIT_FAILURE);
-			}
-			/*on vérifie si la commande existe et si oui on la stock dans une variable*/
-			full_path = find_command_in_path(args[0]);
-
-			if (args[0] != NULL && (args[0][0] == '.'))
-			{
-				if (access(args[0], X_OK) == 0)
-					execve(args[0], args, environ);
-				else
-				{
-					perror("./shell");
-					free(line);
-					free(args);
-					exit(EXIT_FAILURE);
-				}
-			}
-			else if (args[0] != NULL && (args[0][0] == '/'))
-			{
+			if (access(args[0], X_OK) == 0)/*Vérifie si la cmd est exécutable*/
 				execve(args[0], args, environ);
+			else
+			{
 				perror("./shell");
 				free(line);
 				free(args);
 				exit(EXIT_FAILURE);
 			}
-			else if (full_path != NULL)
+		}
+		else
+		{
+			full_path = find_command_in_path(args[0]);
+			if (full_path != NULL)
 			{
 				execve(full_path, args, environ);
 				perror(args[0]);
 				free(full_path);
-				free(line);
-				free(args);
-				exit(1);
 			}
 			else
-				fprintf(stderr, "%s: 1: %s: not found\n", av[0], args[0]);
+			{
+				fprintf(stderr, "%s: 1: %s: not found\n", args[0], args[0]);
+			}
+		}
 
-			free(line);
-			free(args);
-			exit(127); /* on termine proprement le processus enfant avec un code d'erreur */
+		free(line);
+		free(args);
+		exit(127);
+	}
+	else  /* Dans le processus parent */
+	{
+		wait(NULL);  /* Attendre la fin du processus enfant */
+	}
+}
+
+/**
+ * handle_simple_command - Gère les commandes simples sans espaces.
+ * @line: Ligne de commande entrée par l'utilisateur.
+ * @pid: ID du processus enfant.
+ */
+void handle_simple_command(char *line)
+{
+		pid_t pid = fork();
+		extern char **environ;
+		char *args[2];
+		args[0] = line;
+		args[1] = NULL;
+
+		if (pid == 0)
+		{
+			if (access(line, X_OK) == 0)
+				execve(line, args, environ);
+
+			else
+			{
+				fprintf(stderr, "%s: No such file or directory\n", line);
+				exit(127);
+			}
 		}
 		else
-			wait(NULL); /*le parent attend la fin de l'execution de l'enfant*/
+			wait(NULL);
+}
+
+/**
+ * main - Point d'entrée du programme shell.
+ * @ac: Nombre d'arguments.
+ * @av: Tableau des arguments passés au programme.
+ *
+ * Return: Toujours 0 (Succès).
+ */
+int main(int ac, char **av)
+{
+	char *line = NULL;  /* Stocke la ligne d'entrée de l'utilisateur */
+	char **args;        /* Stocke les tokens extraits de la ligne d'entrée */
+	pid_t pid = 0;          /* Stocke l'ID du processus enfant */
+	(void)ac; /* Paramètre inutilisé */
+	(void)av;
+
+	while (1)
+	{
+		/* Si le programme est en mode interactif, afficher l'invite */
+		if (isatty(STDIN_FILENO))
+		{
+			printf("$ ");
+			fflush(stdout);
+		}
+
+		line = get_line();  /* Récupérer la ligne d'entrée */
+		if (line == NULL)
+			continue;
+
+		/* Vérifier si c'est une commande simple sans espace */
+		args = split_line(line);
+		if (!args)
+		{
+			free(line);
+			continue;
+		}
+
+		args = split_line(line);  /* Découper la ligne en tokens */
+		if (!args)
+		{
+			free(line);
+			continue;
+		}
+
+		/* Gérer les commandes comme exit et env */
+		if (handle_exit(args))
+		{
+			free(line);
+			free(args);
+			exit(0);
+		}
+		else if (strcmp(args[0], "env") == 0)
+		{
+			handle_env(args, line);
+		}
+		else
+		{
+			execute_command(args, pid, environ, line);  /* Exécuter les autres cmd */
+		}
+
 	}
-	/*Nettoyage mémoire*/
-	free(line);
-	free(args);
-	line = NULL; /*on rénitialise la variable de stockage du tableau de char*/
-	args = NULL;
+
 	return (0);
 }
