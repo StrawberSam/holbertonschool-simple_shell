@@ -6,7 +6,7 @@
  * Return: 0 la fonction c'est bien passée
  */
 
-extern char **environ;
+
 
 int main(void)
 {
@@ -14,6 +14,7 @@ int main(void)
 	char **args; /*stock les tokens*/
 	pid_t pid; /*stock l'id du process enfant*/
 	char *full_path;
+	extern char **environ;
 
 	while (1)
 	{
@@ -31,7 +32,7 @@ int main(void)
 			exit(0); /*on ferme le programme*/
 		}
 		pid = fork(); /*on crée un nouvel enfant et on récupère son ID*/
-  
+
       	if (pid == -1) /*si le fork de l'enfant échoue*/
       	{
         	perror("fork"); /*message d'erreur dans le terminal*/
@@ -41,7 +42,7 @@ int main(void)
       	if (pid == 0) /* si le fork réussit */
       	{
         	/*on vérifie si la commande existe et si oui on la stock dans une variable*/
-        	full_path = find_command_in_path(args[0]); 
+        	full_path = find_command_in_path(args[0]);
 
         	if (args[0] != NULL && (args[0][0] == '.'))
 			{
