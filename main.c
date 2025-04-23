@@ -41,6 +41,20 @@ int main(int ac, char **av)
 			free(args);
 			exit(0); /*on ferme le programme*/
 		}
+		if (args[0] != NULL && strcmp(args[0], "env") == 0)
+		{
+			int i = 0;
+
+			while (environ[i])
+			{
+				printf("%s\n", environ[i]);
+				i++;
+			}
+			free(line);
+			free(args);
+			continue; /* on passe au prompt suivant sans fork */
+		}
+
 		pid = fork(); /*on crée un nouvel enfant et on récupère son ID*/
 
       	if (pid == -1) /*si le fork de l'enfant échoue*/
