@@ -6,16 +6,23 @@
  * Return: 0 la fonction c'est bien passée
  */
 
-int main(void)
+int main(int ac, char **av)
 {
 	char *line = NULL; /*stock la string récuprée par getline()*/
 	char **args; /*stock les tokens*/
 	pid_t pid; /*stock l'id du process enfant*/
 	char *full_path = NULL;
 	extern char **environ;
+	(void)ac;
 
 	while (1)
 	{
+		/*permet une boucle infinie tant que l'utilisateur ne tape pas EOF*/
+		if (isatty(STDIN_FILENO))/*interactive mode*/
+		{
+			printf("$ ");/*affiche prompt et attend la ligne de l'utilisateur*/
+		}
+
 		line = get_line(); /*on récupère la string*/
 		if (line == NULL) /*si la commande est vide*/
 			continue; /*on attend une nouvelle commande*/
@@ -78,9 +85,8 @@ int main(void)
 				exit(1);
 			}
 			else
-			{
-				fprintf(stderr, "%s: command not found\n", args[0]);
-			}
+				fprintf(stderr, "%s: 1: %s: not found\n", av[0], args[0]);
+			
 			free(line);
 			free(args);
           	exit(1); /* on termine proprement le processus enfant avec un code d'erreur */
