@@ -11,7 +11,7 @@ int main(void)
 	char *line = NULL; /*stock la string récuprée par getline()*/
 	char **args; /*stock les tokens*/
 	pid_t pid; /*stock l'id du process enfant*/
-	char *full_path;
+	char *full_path = NULL;
 	extern char **environ;
 
 	while (1)
@@ -22,6 +22,11 @@ int main(void)
 
 		args = split_line(line); /*on coupe line en mot*/
 
+		if (!args)
+		{
+			free(line);
+			continue;
+		}
 		/*si il y a un argument et on compare args[0] avec "exit" pour exit*/
 		if (args[0] != NULL && strcmp(args[0], "exit") == 0)
 		{
@@ -35,6 +40,7 @@ int main(void)
       	{
         	perror("fork"); /*message d'erreur dans le terminal*/
         	free(line); /*on libère la mémoire*/
+			free(args);
         	return (1); /*on renvoie 1*/
       	}
       	if (pid == 0) /* si le fork réussit */
@@ -49,6 +55,7 @@ int main(void)
 				else
 				{
 					perror("./shell");
+					free(line);
 					free(args);
 					exit(EXIT_FAILURE);
 				}
@@ -57,6 +64,7 @@ int main(void)
 			{
 				execve(args[0], args, environ);
 				perror("./shell");
+				free(line);
 				free(args);
 				exit(EXIT_FAILURE);
 			}
@@ -72,9 +80,9 @@ int main(void)
 			else
 			{
 				fprintf(stderr, "%s: command not found\n", args[0]);
-				free(line);
-				free(args);
 			}
+			free(line);
+			free(args);
           	exit(1); /* on termine proprement le processus enfant avec un code d'erreur */
       	}
       	else
@@ -84,5 +92,6 @@ int main(void)
 	free(line);
 	free(args);
 	line = NULL; /*on rénitialise la variable de stockage du tableau de char*/
+	args = NULL;
 	return (0);
 }
