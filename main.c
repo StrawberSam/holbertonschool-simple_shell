@@ -21,6 +21,7 @@ int main(int ac, char **av)
 		if (isatty(STDIN_FILENO))/*interactive mode*/
 		{
 			printf("$ ");/*affiche prompt et attend la ligne de l'utilisateur*/
+			fflush(stdout);
 		}
 
 		line = get_line(); /*on récupère la string*/
@@ -55,21 +56,33 @@ int main(int ac, char **av)
 			continue; /* on passe au prompt suivant sans fork */
 		}
 
+		if (strchr(line, ' ') == NULL)
+		{
+			handle_no_args_command(line);
+			free(line);
+			continue;
+		}
+
 		pid = fork(); /*on crée un nouvel enfant et on récupère son ID*/
 
-      	if (pid == -1) /*si le fork de l'enfant échoue*/
-      	{
-        	perror("fork"); /*message d'erreur dans le terminal*/
-        	free(line); /*on libère la mémoire*/
+		if (pid == -1) /*si le fork de l'enfant échoue*/
+		{
+			perror("fork"); /*message d'erreur dans le terminal*/
+			free(line); /*on libère la mémoire*/
 			free(args);
-        	return (1); /*on renvoie 1*/
-      	}
-      	if (pid == 0) /* si le fork réussit */
-      	{
-        	/*on vérifie si la commande existe et si oui on la stock dans une variable*/
-        	full_path = find_command_in_path(args[0]);
+			return (1); /*on renvoie 1*/
+		}
+		if (pid == 0) /* si le fork réussit */
+		{
+			if (execve(args[0], args, environ) == -1)
+			{
+				perror("execve");
+				exit(EXIT_FAILURE);
+			}
+			/*on vérifie si la commande existe et si oui on la stock dans une variable*/
+			full_path = find_command_in_path(args[0]);
 
-        	if (args[0] != NULL && (args[0][0] == '.'))
+			if (args[0] != NULL && (args[0][0] == '.'))
 			{
 				if (access(args[0], X_OK) == 0)
 					execve(args[0], args, environ);
@@ -100,13 +113,13 @@ int main(int ac, char **av)
 			}
 			else
 				fprintf(stderr, "%s: 1: %s: not found\n", av[0], args[0]);
-			
+
 			free(line);
 			free(args);
-          	exit(127); /* on termine proprement le processus enfant avec un code d'erreur */
-      	}
-      	else
-    		wait(NULL); /*le parent attend la fin de l'execution de l'enfant*/
+			exit(127); /* on termine proprement le processus enfant avec un code d'erreur */
+		}
+		else
+			wait(NULL); /*le parent attend la fin de l'execution de l'enfant*/
 	}
 	/*Nettoyage mémoire*/
 	free(line);
