@@ -6,8 +6,6 @@
  * Return: 0 la fonction c'est bien passée
  */
 
-
-
 int main(void)
 {
 	char *line = NULL; /*stock la string récuprée par getline()*/
@@ -77,8 +75,6 @@ int main(void)
 				free(line);
 				free(args);
 			}
-
-
           	exit(1); /* on termine proprement le processus enfant avec un code d'erreur */
       	}
       	else
