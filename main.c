@@ -12,6 +12,7 @@ int main(int ac, char **av)
 	char **args; /*stock les tokens*/
 	pid_t pid; /*stock l'id du process enfant*/
 	char *full_path = NULL;
+	char *simple_args[2];
 	extern char **environ;
 	(void)ac;
 
@@ -31,7 +32,9 @@ int main(int ac, char **av)
 		/* Si la ligne ne contient pas d'espace = une seule commande */
 		if (strchr(line, ' ') == NULL)
 		{
-			char *args[] = {line, NULL}; /* ligne simple sans argument */
+			simple_args[0] = line;
+			simple_args[1] = NULL;
+
 			pid = fork();
 
 			if (pid == -1)
@@ -43,12 +46,10 @@ int main(int ac, char **av)
 			if (pid == 0)
 			{
 				if (access(line, X_OK) == 0)
-					execve(line, args, environ);
+					execve(line, simple_args, environ);
 				else
-				{
 					fprintf(stderr, "%s: No such file or directory\n", line);
-					exit(127);
-				}
+				exit(127);
 			}
 			else
 				wait(NULL);
@@ -92,7 +93,7 @@ int main(int ac, char **av)
 			perror("fork"); /*message d'erreur dans le terminal*/
 			free(line); /*on libère la mémoire*/
 			free(args);
-			return (1); /*on renvoie 1*/
+			continue; /*on renvoie 1*/
 		}
 		if (pid == 0) /* si le fork réussit */
 		{
