@@ -14,6 +14,6 @@ void cleaner(char *line);
 char *get_line(void);
 char **split_line(char *line);
 char *find_command_in_path(const char *cmd);
-int main(void);
+int main(int ac, char **av);
 
 #endif /* MAIN_H */
