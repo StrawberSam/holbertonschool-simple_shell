@@ -89,7 +89,7 @@ int main(int ac, char **av)
 			
 			free(line);
 			free(args);
-          	exit(1); /* on termine proprement le processus enfant avec un code d'erreur */
+          	exit(127); /* on termine proprement le processus enfant avec un code d'erreur */
       	}
       	else
     		wait(NULL); /*le parent attend la fin de l'execution de l'enfant*/
