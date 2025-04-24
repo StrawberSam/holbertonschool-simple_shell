@@ -1,29 +1,6 @@
 #include "main.h"
 
-/**
- * cleaner - nettoyage du \n
- *
- * @line: string
- */
 
-void cleaner(char *line)
-{
-	int i;
-
-	if (line == NULL)/*Vérifie que line n'est pas NULL*/
-	{
-		return;/*Si line est NULL, on ne fait rien*/
-	}
-
-	for (i = 0; line[i] != '\0'; i++)
-	{
-		if (line[i] == '\n')
-		{
-			line[i] = '\0';
-			return;
-		}
-	}
-}
 
 /**
  * main - affiche un prompt "$ ", attend une commande
