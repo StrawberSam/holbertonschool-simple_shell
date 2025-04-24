@@ -24,3 +24,4 @@ int handle_exit(char **args);
 void handle_read_error(char *line, ssize_t read);
 
 #endif /* MAIN_H */
+

@@ -57,3 +57,4 @@ char *find_command_in_path(const char *cmd)
 	free(path_copy); /*on peu libérer la mémoire de path_copy car plus besoin*/
 	return (NULL); /*on renvoie NULL par ce que cmd pas trouvée dans le path*/
 }
+
