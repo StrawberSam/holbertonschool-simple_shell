@@ -78,6 +78,7 @@ int main(int ac, char **av)
 		getline(&line, &len, stdin);  /* Récupérer la ligne d'entrée */
 		/*handle_read_error(line, read);*/
 		cleaner(line);
+		free(line);
 
 		if (line == NULL)
 			continue;

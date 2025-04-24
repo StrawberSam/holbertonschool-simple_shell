@@ -38,16 +38,16 @@ void execute_command(char **args, char **av)
 		}
 		else
 		{
-			printf("C'est la faute de Robin !\n");
+			/*printf("C'est la faute de Robin !\n");*/
 			fprintf(stderr, "%s: 1: %s: not found\n", av[0], args[0]);
 			exit(127);
-			printf("C'est la faute de Florian \n!");
+			/*printf("C'est la faute de Florian \n!");*/
 		}
 	}
 	else
 	{
 		wait(NULL); /* Processus parent : attendre la fin */
-		printf("→ DEBUG : commande terminée execute.c\n");
+		/*printf("→ DEBUG : commande terminée execute.c\n");*/
 		fflush(stdout);
 	}
 }
