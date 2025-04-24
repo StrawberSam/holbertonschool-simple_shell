@@ -38,43 +38,16 @@ void execute_command(char **args, char **av)
 		}
 		else
 		{
+			printf("C'est la faute de Robin !\n");
 			fprintf(stderr, "%s: 1: %s: not found\n", av[0], args[0]);
 			exit(127);
+			printf("C'est la faute de Florian \n!");
 		}
 	}
 	else
+	{
 		wait(NULL); /* Processus parent : attendre la fin */
-}
-
-/**
- * execute_simple_command - Exécute une commande sans arguments
- * @line: La commande à exécuter
- */
-
-void execute_simple_command(char *line)
-{
-	pid_t pid;
-	char *args[2];
-
-	args[0] = line;
-	args[1] = NULL;
-
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		exit(EXIT_FAILURE);
+		printf("→ DEBUG : commande terminée execute.c\n");
+		fflush(stdout);
 	}
-
-	if (pid == 0) /* Processus enfant */
-	{
-		if (access(line, X_OK) == 0)
-			execve(line, args, environ);
-
-		perror(line);
-		cleanup(line, args);
-		exit(127);
-	}
-	else
-		wait(NULL); /* Processus parent */
 }
