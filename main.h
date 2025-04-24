@@ -21,5 +21,6 @@ char **split_line(char *line);
 char *find_command_in_path(const char *cmd);
 int main(int ac, char **av);
 int handle_exit(char **args);
+void handle_read_error(char *line, ssize_t read);
 
 #endif /* MAIN_H */
