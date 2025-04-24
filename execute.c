@@ -25,7 +25,7 @@ void execute_command(char **args, char **av)
 				execve(args[0], args, environ);
 
 			perror(args[0]);
-			exit(127);
+			exit(0);
 		}
 
 		full_path = find_command_in_path(args[0]);
@@ -34,7 +34,7 @@ void execute_command(char **args, char **av)
 			execve(full_path, args, environ);
 			perror(args[0]);
 			free(full_path);
-			exit(127);
+			exit(0);
 		}
 		else
 		{
