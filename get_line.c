@@ -1,9 +1,7 @@
 #include "main.h"
 
-
-
 /**
- * main - affiche un prompt "$ ", attend une commande
+ * get_line - affiche un prompt "$ ", attend une commande
  * de l'utilisateur, puis l'affiche.
  * Il s'arrête proprement à la fin de fichier (Ctrl+D).
  *
@@ -17,6 +15,7 @@ char *get_line(void)
 	size_t len = 0;
 	/*stock le nombre de caractère lu par getline*/
 	ssize_t read;
+
 	errno = 0;/*initialise errno à zéro pour éviter d'anciennes valeurs*/
 
 	read = getline(&line, &len, stdin);
@@ -25,15 +24,15 @@ char *get_line(void)
 	{
 		free(line);
 
-		/*L'utilisateur tape EOF. Fin de fichier détectée. Le programme se termine*/
+		/*L'utilisateur tape EOF. Fin de fichier détectée. Le programme se fini*/
 		if (errno == 0)/*variable globale qui contient code erreur d'une fonc*/
 		{/*0 = pas d'erreur*/
-			exit (0);
+			exit(0);
 		}
 		else/*Erreur de lecture*/
 		{
 			perror(": command not found.");
-			exit (1);
+			exit(1);
 		}
 	}
 	cleaner(line);/*appel fonction: nettoyage du \n et si line non valide*/

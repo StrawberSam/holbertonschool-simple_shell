@@ -55,22 +55,22 @@ void execute_simple_command(char *line)
 {
 	pid_t pid;
 	char *args[2];
- 
+
 	args[0] = line;
 	args[1] = NULL;
- 
+
 	pid = fork();
 	if (pid == -1)
 	{
 		perror("fork");
 		exit(EXIT_FAILURE);
 	}
- 
+
 	if (pid == 0) /* Processus enfant */
 	{
 		if (access(line, X_OK) == 0)
 			execve(line, args, environ);
- 
+
 		perror(line);
 		cleanup(line, args);
 		exit(127);
