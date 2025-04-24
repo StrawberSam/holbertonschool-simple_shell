@@ -39,6 +39,7 @@ int main(int ac, char **av)
 	char *line = NULL; /*variable pour la ligne de commande*/
 	size_t len = 0; /*longueur de la ligne*/
 	char **args; /*tableau d'arguments*/
+	int i; /*variable pour la boucle*/
 	(void)ac; /*non utilisé*/
 
 	while (1) /*boucle infinie pr récupérer une cmd*/
@@ -55,6 +56,21 @@ int main(int ac, char **av)
 				exit(0); /*sortie propre*/
 			exit(0); /*sortie propre*/
 		}
+
+		for (i = 0; line[i]; i++) /*parcourt la ligne*/
+		{
+			/*si le caractère est un " ", un tab ou un retour à la ligne*/
+			if (line[i] != ' ' && line[i] != '\t' && line[i] != '\n')
+				break; /*sort de la boucle*/
+		}
+
+		if (line[i] == '\0') /*si la ligne est vide*/
+		{
+			free(line); /*libère la mémoire*/
+			line = NULL; /*réinitialise la ligne*/
+			continue; /*continue la boucle*/
+		}
+
 		cleaner(line); /*nettoie la ligne*/
 
 		args = split_line(line); /*découpe la ligne en mots*/
