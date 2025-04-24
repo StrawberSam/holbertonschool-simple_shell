@@ -32,86 +32,6 @@ void handle_env()
 	}
 }
 
-void execute_command(char **args, pid_t pid, char **environ, char *line)
-{
-	pid = fork();
-	if (pid == -1)  /* Si le fork échoue */
-	{
-		perror("fork");
-		free(line);
-		free(args);
-		exit(1);
-	}
-
-	if (pid == 0)  /* Dans le processus enfant */
-	{
-		char *full_path = NULL;
-
-		if (args[0] != NULL && (args[0][0] == '.' || args[0][0] == '/'))
-		{
-			if (access(args[0], X_OK) == 0)/*Vérifie si la cmd est exécutable*/
-				execve(args[0], args, environ);
-			else
-			{
-				perror("./shell");
-				free(line);
-				free(args);
-				exit(EXIT_FAILURE);
-			}
-		}
-		else
-		{
-			full_path = find_command_in_path(args[0]);
-			if (full_path != NULL)
-			{
-				execve(full_path, args, environ);
-				perror(args[0]);
-				free(full_path);
-			}
-			else
-			{
-				fprintf(stderr, "%s: 1: %s: not found\n", args[0], args[0]);
-			}
-		}
-
-		free(line);
-		free(args);
-		exit(127);
-	}
-	else  /* Dans le processus parent */
-	{
-		wait(NULL);  /* Attendre la fin du processus enfant */
-	}
-}
-
-/**
- * handle_simple_command - Gère les commandes simples sans espaces.
- * @line: Ligne de commande entrée par l'utilisateur.
- * @pid: ID du processus enfant.
- */
-void handle_simple_command(char *line)
-{
-		pid_t pid = fork();
-		extern char **environ;
-		char *args[2];
-		args[0] = line;
-		args[1] = NULL;
-
-		if (pid == 0)
-		{
-			if (access(line, X_OK) == 0)
-				execve(line, args, environ);
-
-			else
-			{
-				fprintf(stderr, "%s: No such file or directory\n", line);
-				exit(127);
-			}
-		}
-		else
-			wait(NULL);
-}
-
 /**
  * main - Point d'entrée du programme shell.
  * @ac: Nombre d'arguments.
@@ -122,8 +42,8 @@ void handle_simple_command(char *line)
 int main(int ac, char **av)
 {
 	char *line = NULL;  /* Stocke la ligne d'entrée de l'utilisateur */
+	size_t len = 0;
 	char **args;        /* Stocke les tokens extraits de la ligne d'entrée */
-	pid_t pid = 0;          /* Stocke l'ID du processus enfant */
 	(void)ac; /* Paramètre inutilisé */
 	(void)av;
 
@@ -138,17 +58,10 @@ int main(int ac, char **av)
 		else
 			handle_non_interactive(av);
 
-		line = get_line();  /* Récupérer la ligne d'entrée */
+		getline(&line, &len, stdin);  /* Récupérer la ligne d'entrée */
+		cleaner(line);
 		if (line == NULL)
 			continue;
-
-		/* Vérifier si c'est une commande simple sans espace */
-		args = split_line(line);
-		if (!args)
-		{
-			free(line);
-			continue;
-		}
 
 		args = split_line(line);  /* Découper la ligne en tokens */
 		if (!args)
@@ -170,7 +83,7 @@ int main(int ac, char **av)
 		}
 		else
 		{
-			execute_command(args, pid, environ, line);  /* Exécuter les autres cmd */
+			execute_command(args, av); /* Exécuter les autres cmd */
 		}
 
 	}
