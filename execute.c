@@ -78,3 +78,4 @@ void execute_simple_command(char *line)
 	else
 		wait(NULL); /* Processus parent */
 }
+
