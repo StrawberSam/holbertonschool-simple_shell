@@ -1,4 +1,5 @@
 #include "main.h"
+
 /**
  * handle_exit - Vérifie si la commande est "exit"
  * @args: Tableau d'arguments
@@ -6,9 +7,10 @@
  */
 int handle_exit(char **args)
 {
-    if (args[0] != NULL && strcmp(args[0], "exit") == 0)
-        return (1);
-    return (0);
+	/*vérifie si le 1e arg est vide et si = "exit"*/
+	if (args[0] != NULL && strcmp(args[0], "exit") == 0)
+		return (1); /*si oui, renvoie 1*/
+	return (0); /*sinon, renvoie 0*/
 }
 /**
  * handle_env - Affiche les variables d'environnement
@@ -16,39 +18,15 @@ int handle_exit(char **args)
  */
 void handle_env(void)
 {
-    int i = 0;
-    while (environ[i])
-    {
-        printf("%s\n", environ[i]);
-        i++;
-    }
+	int i = 0; /*variable pour la boucle*/
+
+	while (environ[i]) /*tant qu'il y a des variables d'env*/
+	{
+		printf("%s\n", environ[i]); /*affiche la variable d'env*/
+		i++; /*on avance dans le PATH*/
+	}
 }
-/**
- * handle_read_error - Gère les erreurs de la fonction read, dont EOF (Ctrl+D)
- * @line: ligne à libérer en cas d'erreur
- * 
-@Read
-: valeur de retour de la fonction getline
- * Libère la mémoire, détecte si EOF est atteint (errno == 0) ou erreur
- */
-void handle_read_error(char *line, ssize_t read)
-{
-    if (read == -1)
-    {
-        free(line);
-        if (errno == 0)
-        {
-            /* EOF (Ctrl+D) sans erreur → on quitte normalement */
-            exit(0);
-        }
-        else
-        {
-            /* Autre erreur → message d'erreur + sortie */
-            perror(": command not found.");
-            exit(1);
-        }
-    }
-}
+
 /**
  * main - Point d'entrée du programme shell.
  * @ac: Nombre d'arguments.
@@ -57,39 +35,53 @@ void handle_read_error(char *line, ssize_t read)
  */
 int main(int ac, char **av)
 {
-    char *line = NULL;  /* Stocke la ligne d'entrée de l'utilisateur */
-    size_t len = 0;
-    ssize_t read;
-    char **args;        /* Stocke les tokens extraits de la ligne d'entrée */
-    (void)ac, (void)av; /* Paramètre inutilisé */
-    errno = 0;
-    while (1)
-    {
-        if (isatty(STDIN_FILENO))/*si prog interactif, affiche l'invite*/
-            printf("$ ");
-        else
-            handle_non_interactive(av);
-        read = getline(&line, &len, stdin);  /* Récupérer la ligne d'entrée */
-        handle_read_error(line, read);
-        cleaner(line);
-        if (line == NULL)
-            continue;
-        args = split_line(line);  /* Découper la ligne en tokens */
-        if (!args)
-        {
-            free(line);
-            continue;
-        }
-        if (handle_exit(args))/* Gérer les commandes comme exit et env */
-        {
-            free(line);
-            free(args);
-            exit(0);
-        }
-        else if (strcmp(args[0], "env") == 0)
-            handle_env();
-        else
-            execute_command(args, av); /* Exécuter les autres cmd */
-    }
-    return (0);
+	ssize_t read; /*variable pour la lecture*/
+	char *line = NULL; /*variable pour la ligne de commande*/
+	size_t len = 0; /*longueur de la ligne*/
+	char **args; /*tableau d'arguments*/
+	(void)ac; /*non utilisé*/
+
+	while (1) /*boucle infinie pr récupérer une cmd*/
+	{
+		if (isatty(STDIN_FILENO)) /*si le shell est en mode interactif*/
+			write(STDOUT_FILENO, "$ ", 2); /*affiche le prompt*/
+
+		read = getline(&line, &len, stdin); /*récupère la ligne de commande*/
+
+		if (read == -1) /*si erreur de lecture*/
+		{
+			free(line); /*libère la mémoire*/
+			if (!isatty(STDIN_FILENO)) /*si pas en mode interactif*/
+				exit(0); /*sortie propre*/
+			exit(0); /*sortie propre*/
+		}
+		cleaner(line); /*nettoie la ligne*/
+
+		args = split_line(line); /*découpe la ligne en mots*/
+		if (!args) /*si pas de mots*/
+		{
+			cleanup(line, NULL); /*libère la mémoire*/
+			line = NULL; /*réinitialise la ligne*/
+			continue; /*continue la boucle*/
+		}
+
+		if (handle_exit(args)) /*si la commande est "exit" ?*/
+		{
+			cleanup(line, args); /*libère la mémoire*/
+			exit(0); /*sortie propre*/
+		}
+		else if (strcmp(args[0], "env") == 0) /*si la commande est "env" ?*/
+		{
+			handle_env(); /*affiche les variables d'env*/
+			cleanup(line, args); /*libère la mémoire*/
+			line = NULL; /*réinitialise la ligne*/
+		}
+		else
+		{
+			execute_command(args, av); /*exécute la commande*/
+			cleanup(line, args); /*libère la mémoire*/
+			line = NULL; /*réinitialise la ligne*/
+		}
+	}
+	return (0); /*retourne 0 pr indiquer que tout s'est bien passé*/
 }
