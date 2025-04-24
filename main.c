@@ -38,7 +38,7 @@ void handle_read_error(char *line, ssize_t read)
 	if (read == -1)
 	{
 		free(line);
-
+		printf("C'est moi qui merde ! %d", errno);
 		if (errno == 0)
 		{
 			/* EOF (Ctrl+D) sans erreur → on quitte normalement */
@@ -63,7 +63,7 @@ int main(int ac, char **av)
 {
 	char *line = NULL;  /* Stocke la ligne d'entrée de l'utilisateur */
 	size_t len = 0;
-	ssize_t read;
+	/*ssize_t read;*/
 	char **args;        /* Stocke les tokens extraits de la ligne d'entrée */
 	(void)ac, (void)av; /* Paramètre inutilisé */
 	errno = 0;
@@ -75,8 +75,8 @@ int main(int ac, char **av)
 		else
 			handle_non_interactive(av);
 
-		read = getline(&line, &len, stdin);  /* Récupérer la ligne d'entrée */
-		handle_read_error(line, read);
+		getline(&line, &len, stdin);  /* Récupérer la ligne d'entrée */
+		/*handle_read_error(line, read);*/
 		cleaner(line);
 
 		if (line == NULL)
