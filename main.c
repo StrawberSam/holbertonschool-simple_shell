@@ -135,6 +135,8 @@ int main(int ac, char **av)
 			printf("$ ");
 			fflush(stdout);
 		}
+		else
+			handle_non_interactive(av);
 
 		line = get_line();  /* Récupérer la ligne d'entrée */
 		if (line == NULL)
