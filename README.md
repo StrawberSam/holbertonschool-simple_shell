@@ -2,7 +2,7 @@
 ![Ubuntu 20.04](https://img.shields.io/badge/Ubuntu-20.04-orange)
 ![C language](https://img.shields.io/badge/Language-C-blue.svg)
 ![Betty compliant](https://img.shields.io/badge/Betty-style-green)
-![Memory Safe](https://img.shields.io/badge/Memory%20Leaks-None-success)
+![Memory Safe](https://img.shields.io/badge/Memory%20Leaks-None-success)  
 (merci à Kévin pour ces magnifiques boutons ! ✨)
 
 ---
@@ -136,7 +136,7 @@ flowchart TD
     G --> L[Libérer la mémoire]
     J --> L
     K --> L
-    L --> A[Retour au programme principal]
+    L --> A[Programme principal]
 
     class B,F,I condition;
     class K erreur;
