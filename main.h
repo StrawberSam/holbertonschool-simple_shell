@@ -16,7 +16,7 @@ void cleanup(char *line, char **args);
 void handle_env(void);
 void execute_command(char **args, char **av);
 char **split_line(char *line);
-char *find_command_in_path(const char *cmd);
+char *_which(const char *cmd);
 int main(int ac, char **av);
 int handle_exit(char **args);
 

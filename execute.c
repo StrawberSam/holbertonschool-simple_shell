@@ -28,7 +28,7 @@ void execute_command(char **args, char **av)
             exit(126); /*sortie avec erreur cmd trouvée mais non exec*/
         }
 
-        full_path = find_command_in_path(args[0]); /*cherche le chemin de la cmd*/
+        full_path = _which(args[0]); /*cherche le chemin de la cmd*/
         if (full_path) /*si le chemin existe*/
         {
             execve(full_path, args, environ); /*exécute la cmd*/

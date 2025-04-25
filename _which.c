@@ -1,7 +1,7 @@
 #include "main.h"
 
 /**
- * find_command_in_path - Cherche une commande dans les répertoires du PATH
+ * _which - Cherche une commande dans les répertoires du PATH
  * @cmd: Nom de la commande à chercher
  *
  * Cette fonction parcourt les différents répertoires listés dans
@@ -15,7 +15,7 @@
  *
  * Return: Chaîne contenant le chemin absolu de la cmd, ou NULL si non trouvé
  */
-char *find_command_in_path(const char *cmd)
+char *_which(const char *cmd)
 {
 	char *path = getenv("PATH"); /*on récupère le PATH en entier*/
 	/*array(s) pour récup les mots de la cmd, une copie du path et un array*/
