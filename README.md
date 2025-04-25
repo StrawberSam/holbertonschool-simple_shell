@@ -2,7 +2,7 @@
 ![Ubuntu 20.04](https://img.shields.io/badge/Ubuntu-20.04-orange)
 ![C language](https://img.shields.io/badge/Language-C-blue.svg)
 ![Betty compliant](https://img.shields.io/badge/Betty-style-green)
-![Memory Safe](https://img.shields.io/badge/Memory%20Leaks-None-success)
+![Memory Safe](https://img.shields.io/badge/Memory%20Leaks-None-success)  
 (merci à Kévin pour ces magnifiques boutons ! ✨)
 
 ---
@@ -109,7 +109,7 @@ $ ==29855==
 ==29855== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 ```
 ---
-📚 Man Page 📚
+## 📚 Man Page 📚
 Vous pouvez consulter la man page de la fonction _printf en exécutant la commande suivante :
 ```bash
 man ./man_1_simple_shell
