@@ -1,0 +1,75 @@
+.TH hsh 1 "April 2025" "Holberton School" "Simple Shell Manual"
+.SH NAME
+hsh \- a simple UNIX command line interpreter
+.SH SYNOPSIS
+.B ./hsh
+.SH DESCRIPTION
+.B hsh
+is a minimalist implementation of a UNIX shell written in C. It reads commands from standard input, parses them, and executes them using system calls.
+.PP
+Features include:
+.IP \[bu] 2
+Execution of external commands using the PATH environment variable
+.IP \[bu] 2
+Support for relative and absolute command paths
+.IP \[bu] 2
+Basic error handling
+.IP \[bu] 2
+Dynamic memory management
+.IP \[bu] 2
+Interactive and non-interactive mode
+.SH USAGE
+.TP
+Interactive mode:
+.EX
+$ ./hsh
+($) ls -l
+($) exit
+.EE
+.TP
+Non-interactive mode:
+.EX
+$ echo "ls -l" | ./hsh
+.EE
+.SH COMMANDS
+Standard UNIX commands available in the system PATH.
+.SH OPTIONS
+This shell does not support custom command-line options.
+.SH BUILTINS
+.TP
+.B exit
+Exit the shell.
+.SH FILES
+No configuration files are used.
+.SH IMPLEMENTATION
+The shell is built using the following core functions:
+.IP \[bu] 2
+.B split_line
+\- splits user input into tokens
+.IP \[bu] 2
+.B _which
+\- searches for the executable in the PATH
+.IP \[bu] 2
+.B execute
+\- forks and executes the given command
+.IP \[bu] 2
+.B clean
+\- handles dynamic memory cleanup
+.SH EXAMPLES
+.TP
+Interactive:
+.EX
+$ ./hsh
+($) ls
+($) /bin/echo Hello, world
+($) exit
+.EE
+.TP
+Scripted:
+.EX
+$ echo "ls -a" | ./hsh
+.EE
+.SH AUTHORS
+Developed by students of Holberton School.
+.SH SEE ALSO
+sh(1), bash(1), execve(2), fork(2), getenv(3)
