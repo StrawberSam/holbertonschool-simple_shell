@@ -2,7 +2,7 @@
 ![Ubuntu 20.04](https://img.shields.io/badge/Ubuntu-20.04-orange)
 ![C language](https://img.shields.io/badge/Language-C-blue.svg)
 ![Betty compliant](https://img.shields.io/badge/Betty-style-green)
-![Memory Safe](https://img.shields.io/badge/Memory%20Leaks-None-success)  
+![Memory Safe](https://img.shields.io/badge/Memory%20Leaks-None-success)
 (merci à Kévin pour ces magnifiques boutons ! ✨)
 
 ---
@@ -119,20 +119,27 @@ man ./man_1_simple_shell
 
 ```mermaid
 flowchart TD
-    A(main) --> B(Afficher le prompt)
-    B --> C[Lire la ligne de commande]
-    C --> D[split_line,  découper la commande]
-    D --> E[handle_exit / handle_env ?]
-    E -->|Non| F[Rechercher le chemin avec which / stat]
-    F --> G[execute_command]
-    G --> H[Créer un processus fils en faisant fork]
-    H --> I{Fils ?}
-    I -->|Oui| J[execute_simple_command]
-    J --> K[execve]
-    I -->|Non| L[wait]
-    K --> M[cleanup / cleaner]
-    L --> M
-    M --> B
+    classDef condition fill:#ffeb3b,stroke:#000,stroke-width:1px;
+    classDef erreur fill:#f44336,color:#fff,stroke:#000,stroke-width:1px;
+
+    A[Programme Principal] --> B{Une commande est-elle passée ?}
+    B -- Oui --> C[Analyser la commande]
+    B -- Non --> D[Afficher le prompt $]
+    D --> E[Attendre une saisie utilisateur]
+    E --> C
+    C --> F{Est-ce une commande interne ?}
+    F -- Oui --> G[Exécuter la commande interne]
+    F -- Non --> H[Rechercher la commande dans le PATH]
+    H --> I{Trouvée dans le PATH ?}
+    I -- Oui --> J[Exécuter la commande]
+    I -- Non --> K[Afficher une erreur]
+    G --> L[Libérer la mémoire]
+    J --> L
+    K --> L
+    L --> A[Retour au programme principal]
+
+    class B,F,I condition;
+    class K erreur;
 ```
 
 ---
